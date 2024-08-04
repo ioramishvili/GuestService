@@ -1,0 +1,67 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: guest-service-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./:/www/
+    depends_on:
+      - php-fpm
+    networks:
+      - common
+
+  db:
+    image: mysql/mysql-server:latest
+    container_name: guest-service-mysql
+    restart: on-failure
+    command: >
+      --socket=/var/lib/mysql/mysql.sock
+      --mysqlx=0
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - TZ=${TZ}
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./var:/www/var
+      - ./mysql_data:/var/lib/mysql
+      - ./mysql_logs:/var/log/mysql
+      - mysql_socket:/var/lib/mysql
+    networks:
+      - common
+
+  php-fpm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: yiisoftware/yii2-php:8.2-fpm
+    container_name: guest-service-php
+    restart: always
+    environment:
+      - TZ=${TZ}
+      - XDEBUG_MODE=debug
+      - XDEBUG_SESSION=phpstorm
+      - PHP_IDE_CONFIG=serverName=cli
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    working_dir: /www
+    volumes:
+      - ./:/www/
+    networks:
+      - common
+
+volumes:
+  mysql_socket:
+
+networks:
+  common:
+    driver: bridge

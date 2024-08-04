@@ -1,0 +1,51 @@
+# IDE and editor folders
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+*.log
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Composer
+/vendor/
+composer.phar
+
+# PHPUnit
+phpunit.xml
+phpunit.xml.dist
+
+# Docker
+*.pid
+*.db
+*.sqlite
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Environment files
+.env
+docker-compose.yml
+
+# Logs and Cache
+/logs/
+cache/
+tmp/
+var
+mysql_data
+mysql_logs
+*.tmp
+*.bak
+
+# Application specific
+*.keystore
+*.pem
+
+# Build artifacts
+/build/
+dist/
+docs
