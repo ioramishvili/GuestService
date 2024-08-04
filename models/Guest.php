@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace app\models;
 
 use app\helpers\PhoneHelper;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\BaseActiveRecord;
+use yii\db\Expression;
 
 /**
  * Модель для работы с таблицей гостей.
@@ -33,6 +36,34 @@ class Guest extends ActiveRecord
             [['first_name', 'last_name', 'country'], 'string', 'max' => 30],
             ['phone', 'match', 'pattern' => '/^\+\d{1,15}$/'],
         ];
+    }
+
+    public function behaviors(): array
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'value' => new Expression('NOW()'),
+                'attributes' => [
+                    BaseActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    BaseActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+            ],
+        ];
+    }
+
+    public function fields(): array
+    {
+        $fields = parent::fields();
+
+        $fields['created_at'] = function () {
+            return $this->created_at instanceof Expression ? date('Y-m-d H:i:s') : $this->created_at;
+        };
+        $fields['updated_at'] = function () {
+            return $this->updated_at instanceof Expression ? date('Y-m-d H:i:s') : $this->updated_at;
+        };
+
+        return $fields;
     }
 
     public function beforeSave($insert): bool
