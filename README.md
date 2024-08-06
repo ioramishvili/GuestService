@@ -75,7 +75,7 @@ API поддерживает следующие запросы:
 
 - **Получение списка гостей:**
   ```bash
-  curl -X GET http://localhost/api/guest/
+  curl -X GET http://localhost/api/guest/ -H "Content-Type: application/json"
   ```
 
 ### Дополнительная информация
